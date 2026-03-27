@@ -253,6 +253,36 @@ const tokenTotalSegment: StatusLineSegment = {
   },
 };
 
+const tokenSummarySegment: StatusLineSegment = {
+  id: "token_summary",
+  render(ctx) {
+    const { input, output, cacheRead, cacheWrite } = ctx.usageStats;
+
+    const total = input + output + cacheRead + cacheWrite;
+    if (!total) return { content: "", visible: false };
+
+    const parts = [] as string[];
+    if (input) {
+      parts.push(`↓${formatTokens(input)}`);
+    }
+    if (output) {
+      parts.push(`↑${formatTokens(output)}`);
+    }
+    if (cacheRead) {
+      parts.push(`c↓${formatTokens(cacheRead)}`);
+    }
+    if (cacheWrite) {
+      parts.push(`c↑${formatTokens(cacheWrite)}`);
+    }
+
+    if (!parts.length) {
+      return { content: "", visible: false };
+    }
+
+    return { content: color(ctx, "tokens", parts.join(" ")), visible: true };
+  },
+};
+
 const costSegment: StatusLineSegment = {
   id: "cost",
   render(ctx) {
@@ -303,6 +333,30 @@ const contextTotalSegment: StatusLineSegment = {
       content: color(ctx, "context", withIcon(icons.context, formatTokens(window))),
       visible: true,
     };
+  },
+};
+
+const contextWindowSegment: StatusLineSegment = {
+  id: "context_window",
+  render(ctx) {
+    const icons = getIcons();
+    const pct = ctx.contextPercent;
+    const window = ctx.contextWindow;
+    if (!window) return { content: "", visible: false };
+
+    const autoIcon = ctx.autoCompactEnabled && icons.auto ? ` ${icons.auto}` : "";
+    const text = `${formatTokens(window)} (${pct.toFixed(1)}%)${autoIcon}`;
+
+    let content: string;
+    if (pct > 90) {
+      content = withIcon(icons.context, color(ctx, "contextError", text));
+    } else if (pct > 70) {
+      content = withIcon(icons.context, color(ctx, "contextWarn", text));
+    } else {
+      content = withIcon(icons.context, color(ctx, "context", text));
+    }
+
+    return { content, visible: true };
   },
 };
 
@@ -438,9 +492,11 @@ export const SEGMENTS: Record<StatusLineSegmentId, StatusLineSegment> = {
   token_in: tokenInSegment,
   token_out: tokenOutSegment,
   token_total: tokenTotalSegment,
+  token_summary: tokenSummarySegment,
   cost: costSegment,
   context_pct: contextPctSegment,
   context_total: contextTotalSegment,
+  context_window: contextWindowSegment,
   time_spent: timeSpentSegment,
   time: timeSegment,
   session: sessionSegment,
