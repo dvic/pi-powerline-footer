@@ -1108,6 +1108,7 @@ export default function powerlineFooter(pi: ExtensionAPI) {
           ctx.ui.notify("Stash preserved — clear editor then Alt+S to restore", "info");
         }
       }
+      tuiRef?.requestRender();
     }
   });
 
