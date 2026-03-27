@@ -98,8 +98,8 @@ export const PRESETS: Record<StatusLinePreset, PresetDef> = {
   },
 
   custom: {
-    leftSegments: ["pi", "model", "thinking", "path", "git", "context_window"],
-    rightSegments: ["token_summary", "cost"],
+    leftSegments: ["pi", "model", "thinking", "path", "git", "token_summary", "cost"],
+    rightSegments: [],
     separator: "powerline-thin",
     colors: DEFAULT_COLORS,
     segmentOptions: {

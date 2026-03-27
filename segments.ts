@@ -256,7 +256,6 @@ const tokenTotalSegment: StatusLineSegment = {
 const tokenSummarySegment: StatusLineSegment = {
   id: "token_summary",
   render(ctx) {
-    const icons = getIcons();
     const { input, output, cacheRead, cacheWrite } = ctx.usageStats;
 
     const total = input + output + cacheRead + cacheWrite;
@@ -264,24 +263,23 @@ const tokenSummarySegment: StatusLineSegment = {
 
     const parts = [] as string[];
     if (input) {
-      parts.push(withIcon(icons.input, formatTokens(input)));
+      parts.push(`↓${formatTokens(input)}`);
     }
     if (output) {
-      parts.push(withIcon(icons.output, formatTokens(output)));
+      parts.push(`↑${formatTokens(output)}`);
     }
     if (cacheRead) {
-      parts.push([icons.cache, icons.input, formatTokens(cacheRead)].filter(Boolean).join(" "));
+      parts.push(`c↓${formatTokens(cacheRead)}`);
     }
     if (cacheWrite) {
-      parts.push([icons.cache, icons.output, formatTokens(cacheWrite)].filter(Boolean).join(" "));
+      parts.push(`c↑${formatTokens(cacheWrite)}`);
     }
 
     if (!parts.length) {
       return { content: "", visible: false };
     }
 
-    const content = parts.join(` ${SEP_DOT} `);
-    return { content: color(ctx, "tokens", content), visible: true };
+    return { content: color(ctx, "tokens", parts.join(" ")), visible: true };
   },
 };
 
